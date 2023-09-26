@@ -20,7 +20,7 @@ const productSchema = new mongoose.Schema({
     price: {
         type: Number,
         required: true,
-        min: 0
+        min: [0, "Price must be positive ya dodo"] // Using the built in validator with a custom error message
     },
     onSale: {
         type: Boolean,
@@ -36,23 +36,28 @@ const productSchema = new mongoose.Schema({
             type: Number,
             default: 0
         }
-    }
+    },
+    size: {
+        type: String,
+        enum: ["S", "M", "L", "XL", "XXL"] // enum makes sure that the value passed in for size is in the array
+    }                                      // this is a validation error for String
 });
 
 // Here we create our data model
 const Product = mongoose.model('Product', productSchema);
 
 // Commenting this out so that we don't try to add the same product for our example
-// const bike = new Product({ name: "Tire Pump", price: 19.50, categories: ["Cycling"] });// if price is a string then it must be a number
-// bike.save()                                                      // that can be cast to a number. Not a good idea
-//     .then(data => {                                              // BAD!
-//         log("IT WORKED!");
-//         log(data);
-//     })
-//     .catch(err => {
-//         log("OH NO ERROR!");
-//         log(err);
-//     });
+
+const bike = new Product({ name: "Cycling Jersey", price: 19.50, categories: ["Cycling"], size: "XS" });// if price is a string then it must be a number
+bike.save()                                                      // that can be cast to a number. Not a good idea
+    .then(data => {                                              // BAD!
+        log("IT WORKED!");
+        log(data);
+    })
+    .catch(err => {
+        log("OH NO ERROR!");
+        log(err);
+    });
 
 // IMPORTANT INFORMATION REGARDING UPDATING WITH MONGOOSE
 // When we update something there is no validation of our data. It will just update. We need
@@ -62,12 +67,13 @@ const Product = mongoose.model('Product', productSchema);
 // Keep in mind that we can also give users certain err logs if we need to
 // The new: true is so that we get back the updated information in our data object. We can then 
 // display this information to the user if need be
-Product.findOneAndUpdate({name: "Tire Pump"}, {price: -9.99}, {new: true, runValidators: true}) // set to true
-.then(data => {
-    log("YES, IT WORKED!");
-    log(data);
-})
-.catch(err => {
-    log("OH NO YOU FUCKED UP");
-    log(err); // We have the err object that has a lot of information
-})
+
+// Product.findOneAndUpdate({name: "Tire Pump"}, {price: -9.99}, {new: true, runValidators: true}) // set to true
+// .then(data => {
+//     log("YES, IT WORKED!");
+//     log(data);
+// })
+// .catch(err => {
+//     log("OH NO YOU FUCKED UP");
+//     log(err); // We have the err object that has a lot of information
+// })
