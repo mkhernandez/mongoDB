@@ -61,20 +61,29 @@ productSchema.methods.newCategory = function(newCat) {
     return this.save();
 }
 
+// Static methods. These are methods on the actual Product model and not on an instance of that model
+productSchema.statics.fireSale = function() {
+    return this.updateMany({}, {onSale: true, price: 0});
+}
+
 // Here we create our data model
 const Product = mongoose.model('Product', productSchema);
 
 // This part here is for the silly instance example
-const findProduct = async () => {
-    const foundProduct = await Product.findOne({name: "Mountain Bike"});
-    log(foundProduct);
-    await foundProduct.toggleOnSale();
-    log(foundProduct);
-    await foundProduct.newCategory("Outdoors");
-    log(foundProduct);
-}
+// const findProduct = async () => {
+//     const foundProduct = await Product.findOne({name: "Mountain Bike"});
+//     log(foundProduct);
+//     await foundProduct.toggleOnSale();
+//     log(foundProduct);
+//     await foundProduct.newCategory("Outdoors");
+//     log(foundProduct);
+// }
 
-findProduct();
+// findProduct();
+
+// This is for the static method call. Must be on the model in this case is the Product model.
+// Can use async function if we want to.
+Product.fireSale().then(res => log(res));
 
 // Commenting this out so that we don't try to add the same product for our example
 
