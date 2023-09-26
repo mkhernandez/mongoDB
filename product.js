@@ -43,21 +43,51 @@ const productSchema = new mongoose.Schema({
     }                                      // this is a validation error for String
 });
 
+// Model Instance Methods. Silly example of creating our own methods
+// productSchema.methods.greet = function() {
+//     log("HEY YA'LL!");
+//     log(` -from ${this.name}`);
+// }
+
+// One way of doing this
+productSchema.methods.toggleOnSale = function() {
+    this.onSale = !this.onSale;
+    return this.save();
+}
+
+// Another method
+productSchema.methods.newCategory = function(newCat) {
+    this.categories.push(newCat);
+    return this.save();
+}
+
 // Here we create our data model
 const Product = mongoose.model('Product', productSchema);
 
+// This part here is for the silly instance example
+const findProduct = async () => {
+    const foundProduct = await Product.findOne({name: "Mountain Bike"});
+    log(foundProduct);
+    await foundProduct.toggleOnSale();
+    log(foundProduct);
+    await foundProduct.newCategory("Outdoors");
+    log(foundProduct);
+}
+
+findProduct();
+
 // Commenting this out so that we don't try to add the same product for our example
 
-const bike = new Product({ name: "Cycling Jersey", price: 19.50, categories: ["Cycling"], size: "XS" });// if price is a string then it must be a number
-bike.save()                                                      // that can be cast to a number. Not a good idea
-    .then(data => {                                              // BAD!
-        log("IT WORKED!");
-        log(data);
-    })
-    .catch(err => {
-        log("OH NO ERROR!");
-        log(err);
-    });
+// const bike = new Product({ name: "Cycling Jersey", price: 19.50, categories: ["Cycling"], size: "XS" });// if price is a string then it must be a number
+// bike.save()                                                      // that can be cast to a number. Not a good idea
+//     .then(data => {                                              // BAD!
+//         log("IT WORKED!");
+//         log(data);
+//     })
+//     .catch(err => {
+//         log("OH NO ERROR!");
+//         log(err);
+//     });
 
 // IMPORTANT INFORMATION REGARDING UPDATING WITH MONGOOSE
 // When we update something there is no validation of our data. It will just update. We need
